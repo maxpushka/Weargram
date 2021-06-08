@@ -1,0 +1,1 @@
+# Unofficial Telegram client for Galaxy Wearables

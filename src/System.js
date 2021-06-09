@@ -1,4 +1,60 @@
 /* eslint-disable */
+
+/** Back key handler **/
+(function () {
+	window.addEventListener("tizenhwkey", function (ev) {
+		var activePopup = null,
+			page = null,
+			pageId = "";
+
+		if (ev.keyName === "back") {
+			activePopup = document.querySelector(".ui-popup-active");
+			page = document.getElementsByClassName("ui-page-active")[0];
+			pageId = page ? page.id : "";
+
+			if (pageId === "main" && !activePopup) {
+				try {
+					tizen.application.getCurrentApplication().exit();
+				} catch (ignore) {
+				}
+			} else {
+				window.history.back();
+			}
+		}
+	});
+}());
+
+/** Circle helper **/
+/*global tau */
+/*jslint unparam: true */
+(function (tau) {
+
+	// This logic works only on circular device.
+	if (tau.support.shape.circle) {
+		/**
+		 * pagebeforeshow event handler
+		 * Do preparatory works and adds event listeners
+		 */
+		document.addEventListener("pagebeforeshow", function (event) {
+			/**
+			 * page - Active page element
+			 * list - NodeList object for lists in the page
+			 */
+			let page,
+				list;
+
+			page = event.target;
+			if (page.id !== "page-snaplistview" && page.id !== "page-swipelist" && page.id !== "page-marquee-list") {
+				list = page.querySelector(".ui-listview");
+				if (list) {
+					tau.widget.ArcListview(list);
+				}
+			}
+		});
+	}
+}(tau));
+
+/** Low battery check **/
 (function () {
 	var systeminfo = {
 

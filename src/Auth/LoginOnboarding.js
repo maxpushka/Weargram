@@ -3,8 +3,9 @@ import {Link} from 'react-router-dom';
 import './index.css';
 
 export default function LoginOnboarding(props) {
+    console.log("props", props);
     return (
-        <div className="ui-page" id="auth">
+        <React.Fragment>
             <div className="ui-header flex" style={{height: "min-content", marginBottom: "22px"}}>
                 <img src={process.env.PUBLIC_URL + '/icons/app-icon.svg'} alt="Weargram logo"
                      style={{width: "81px", height: "81px"}}/>
@@ -26,6 +27,6 @@ export default function LoginOnboarding(props) {
                     <div className="buttonLabel">Log in by QR code</div>
                 </div>
             </div>
-        </div>
+        </React.Fragment>
     )
 }

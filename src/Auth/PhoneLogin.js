@@ -2,10 +2,10 @@ import React from 'react';
 
 export default function PhoneLogin() {
     return (
-        <div className="ui-page" id="phone-login">
+        <React.Fragment>
             <div className="ui-content">
                 <p>Phone login page</p>
             </div>
-        </div>
+        </React.Fragment>
     )
 }

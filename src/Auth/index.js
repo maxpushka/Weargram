@@ -11,16 +11,14 @@ export default function Auth() {
     const qrLogin = `${url}/qr`;
 
     return (
-        <Switch>
-            <Route exact path={url}>
-                <LoginOnboarding phoneLoginPath={phoneLogin} qrLoginPath={qrLogin}/>
-            </Route>
-            <Route exact path={phoneLogin}>
-                <PhoneLogin/>
-            </Route>
-            <Route exact path={qrLogin}>
-                <QrLogin/>
-            </Route>
-        </Switch>
+        <div className="ui-page" id="login">
+            <Switch>
+                <Route exact path={url}>
+                    <LoginOnboarding phoneLoginPath={phoneLogin} qrLoginPath={qrLogin}/>
+                </Route>
+                <Route path={phoneLogin} component={PhoneLogin}/>
+                <Route path={qrLogin} component={QrLogin}/>
+            </Switch>
+        </div>
     )
 }

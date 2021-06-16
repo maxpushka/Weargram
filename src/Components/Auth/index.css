@@ -1,0 +1,39 @@
+.ui-btn.ui-btn-icon {
+    background-color: #50a2e9;
+}
+
+.flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.flexBody {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.btn-label {
+    font-size: 18px;
+    height: 44px;
+    line-height: 22px;
+    margin-top: 11px;
+}
+
+.btn-large {
+    background-size: 75% !important;
+    border-radius: 50%;
+    width: 5.5rem;
+    height: 5.5rem;
+}
+
+.btn-medium {
+    background-size: 75% !important;
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+}

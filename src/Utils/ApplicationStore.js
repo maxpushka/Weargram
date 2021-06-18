@@ -126,36 +126,36 @@ class ApplicationStore extends EventEmitter {
 
         break;
       }
-      // case 'updateServiceNotification': {
-      //   const {type, content} = update;
-      //
-      //   if (!content) return;
-      //   if (content['@type'] === 'messageText') {
-      //     const {text} = content;
-      //     if (!text) return;
-      //
-      //     if (text['@type'] === 'formattedText' && text.text) {
-      //       switch (type) {
-      //         case 'AUTH_KEY_DROP_DUPLICATE':
-      //           let result = window.confirm(text.text);
-      //           if (result) {
-      //             TdLibController.logOut();
-      //           }
-      //           break;
-      //         default: {
-      //           showAlert({
-      //             title: LStore.getString('AppName'),
-      //             message: text,
-      //             ok: LStore.getString('OK'),
-      //           });
-      //           break;
-      //         }
-      //       }
-      //     }
-      //   }
-      //
-      //   break;
-      // }
+        // case 'updateServiceNotification': {
+        //   const {type, content} = update;
+        //
+        //   if (!content) return;
+        //   if (content['@type'] === 'messageText') {
+        //     const {text} = content;
+        //     if (!text) return;
+        //
+        //     if (text['@type'] === 'formattedText' && text.text) {
+        //       switch (type) {
+        //         case 'AUTH_KEY_DROP_DUPLICATE':
+        //           let result = window.confirm(text.text);
+        //           if (result) {
+        //             TdLibController.logOut();
+        //           }
+        //           break;
+        //         default: {
+        //           showAlert({
+        //             title: LStore.getString('AppName'),
+        //             message: text,
+        //             ok: LStore.getString('OK'),
+        //           });
+        //           break;
+        //         }
+        //       }
+        //     }
+        //   }
+        //
+        //   break;
+        // }
       default:
         break;
     }
@@ -386,8 +386,8 @@ class ApplicationStore extends EventEmitter {
     }
   };
 
-  setPhoneNumber = phone => {
-    TdLibController.send({
+  setPhoneNumber = async (phone) => {
+    await TdLibController.send({
       '@type': 'setAuthenticationPhoneNumber',
       phone_number: phone,
     }).then(result => {

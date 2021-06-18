@@ -6,7 +6,6 @@ export default function QRCode() {
       <div className="ui-page ui-page-active">
         <div className="ui-content">
           <p>QR login page</p>
-          // todo: add 'Login by QR code' redirect button
         </div>
       </div>
   );

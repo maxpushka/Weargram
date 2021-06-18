@@ -34,6 +34,18 @@
 .btn-medium {
     background-size: 75% !important;
     border-radius: 50%;
-    width: 4rem;
-    height: 4rem;
+    width: 4rem !important;
+    height: 4rem !important;
+}
+
+input.bad-phone {
+    border: solid 3px #FF0000 !important;
+    border-radius: 2.1875rem !important;
+}
+
+p.bad-phone {
+    color: #FF0000 !important;
+    font-size: 20px !important;
+    line-height: 24px !important;
+    margin: 0.75rem 0 !important;
 }

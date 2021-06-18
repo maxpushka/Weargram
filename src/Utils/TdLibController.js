@@ -17,7 +17,7 @@ class TdLibController extends EventEmitter {
   constructor() {
     super();
 
-    // prod
+    // prod: uncomment
     // const deviceInfo = tizen.systeminfo.getPropertyValue('BUILD', (build) => {
     //   console.log(build);
     //   return build;
@@ -31,7 +31,7 @@ class TdLibController extends EventEmitter {
     this.disableLog = false;
     this.parameters = {
       '@type': 'tdParameters',
-      use_test_dc: false,
+      use_test_dc: true, // prod: use_test_dc: false
       api_id: process.env['REACT_APP_APP_ID'],
       api_hash: process.env['REACT_APP_APP_HASH'],
       system_language_code: /*tizen.systeminfo.getPropertyValue('LOCALE', (locale) => locale.language) ||*/ 'en',

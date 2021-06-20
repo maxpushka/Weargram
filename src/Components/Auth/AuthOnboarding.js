@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
-import './index.css';
+import './Auth.css';
 
 export default function AuthOnboarding({path}) {
   console.log('at AuthOnboarding', path);
@@ -14,11 +14,11 @@ export default function AuthOnboarding({path}) {
     console.log('adding back button prevention event');
     window.addEventListener('popstate', onGoingBack);
 
-    return function cleanup() {
+    return function() {
       console.log('removing back button prevention event');
       window.removeEventListener('popstate', onGoingBack);
     };
-  });
+  }, []);
 
   return (
       <div className="ui-page ui-page-active">

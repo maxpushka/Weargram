@@ -10,7 +10,9 @@ function databaseExists(dbname, callback) {
     if (!existed) indexedDB.deleteDatabase(dbname);
     callback(existed);
   };
-  req.onupgradeneeded = () => {existed = false;};
+  req.onupgradeneeded = () => {
+    existed = false;
+  };
 }
 
 class TdLibController extends EventEmitter {
@@ -25,7 +27,7 @@ class TdLibController extends EventEmitter {
     const deviceInfo = {
       manufacturer: 'Samsung',
       model: 'Galaxy Watch 3',
-      buildVersion: '5.5',
+      buildVersion: 'Tizen 5.5',
     };
 
     this.disableLog = false;
@@ -35,8 +37,8 @@ class TdLibController extends EventEmitter {
       api_id: process.env['REACT_APP_APP_ID'],
       api_hash: process.env['REACT_APP_APP_HASH'],
       system_language_code: /*tizen.systeminfo.getPropertyValue('LOCALE', (locale) => locale.language) ||*/ 'en',
-      device_model: deviceInfo.manufacturer + deviceInfo.model || 'Samsung Galaxy',
-      system_version: deviceInfo.buildVersion || 'Tizen',
+      device_model: [deviceInfo.manufacturer, deviceInfo.model].join(' '),
+      system_version: deviceInfo.buildVersion,
       application_version: packageJson.version,
       use_secret_chats: false,
       use_message_database: true,
@@ -75,9 +77,8 @@ class TdLibController extends EventEmitter {
           }
           this.emit('update', update);
         };
-
+        resolve();
       });
-      resolve();
     });
   };
 

@@ -1,12 +1,13 @@
 import React from 'react';
+import TizenPage from '../TizenPage';
 
 export default function QRCode() {
   console.log('at QRCode');
   return (
-      <div className="ui-page ui-page-active">
+      <TizenPage>
         <div className="ui-content">
           <p>QR login page</p>
         </div>
-      </div>
+      </TizenPage>
   );
 }

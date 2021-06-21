@@ -1,22 +1,44 @@
 import React from 'react';
-import {Switch, Route, useRouteMatch} from 'react-router-dom';
+import {Route, Switch, useRouteMatch} from 'react-router-dom';
 import AuthOnboarding from './AuthOnboarding';
 
 const Phone = React.lazy(() => import('./Phone'));
 const QRCode = React.lazy(() => import('./QRCode'));
+const Password = React.lazy(() => import('./Password'));
+const Unregistered = React.lazy(() => import('./Unregistered'));
 
-// todo: handle offline mode
+export const routesContext = React.createContext();
+
 export default function AuthComponent() {
   console.log('at Auth');
   const {url} = useRouteMatch();
+  const routes = {
+    phone: `${url}/phone`,
+    qr: `${url}/qr`,
+    password: `${url}/pass`,
+    unregistered: `${url}/unreg`,
+    success: '/',
+  };
 
   return (
       <Switch>
         <Route exact path={`${url}`}>
-          <AuthOnboarding path={url}/>
+          {/*<AuthOnboarding path={url}/>*/}
+          <Password/>
         </Route>
-        <Route path={`${url}/phone`} component={Phone}/>
-        <Route path={`${url}/qr`} component={QRCode}/>
+        <Route path={routes.phone}>
+          <routesContext.Provider
+              value={{
+                success: routes.success,
+                unregistered: routes.unregistered,
+                password: routes.password,
+              }}>
+            <Phone/>
+          </routesContext.Provider>
+        </Route>
+        <Route path={routes.qr} component={QRCode} passwordPath={routes.password}/>
+        <Route path={routes.password} component={Password}/>
+        <Route path={routes.unregistered} component={Unregistered}/>
       </Switch>
   );
 }
@@ -40,7 +62,7 @@ export function isConnecting(state) {
     case 'connectionStateWaitingForNetwork': {
       return false;
     }
+    default:
+      return false;
   }
-
-  return false;
 }

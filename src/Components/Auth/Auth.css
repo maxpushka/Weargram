@@ -38,14 +38,24 @@
     height: 4rem !important;
 }
 
-input.bad-phone {
+input.bad-input {
     border: solid 3px #FF0000 !important;
     border-radius: 2.1875rem !important;
 }
 
-p.bad-phone {
+p.bad-input {
     color: #FF0000 !important;
     font-size: 20px !important;
     line-height: 24px !important;
     margin: 0.75rem 0 !important;
+}
+
+.unregistered-icon {
+    font-size: 2rem;
+    color: rgb(33,33,33);
+    background-color: #009af9;
+    border-radius: 2rem;
+    padding: .25rem;
+    text-align: center;
+    vertical-align: middle;
 }

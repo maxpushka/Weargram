@@ -3,17 +3,18 @@ import {Redirect, Route, Switch} from 'react-router-dom';
 import ApplicationStore from './Utils/ApplicationStore';
 import Loading from './Components/Loading';
 import TdLibController from './Utils/TdLibController';
+import TizenPage from './Components/TizenPage';
 
 const AuthComponent = React.lazy(() => import('./Components/Auth/Auth'));
 
 function Main() {
   console.log('at Main');
   return (
-      <div className="ui-page ui-page-active">
-        <div className="ui-content ">
+      <TizenPage>
+        <div className="ui-content">
           Main chat list
         </div>
-      </div>
+      </TizenPage>
   );
 }
 
@@ -90,3 +91,6 @@ export default function App() {
       </React.Suspense>
   );
 }
+
+// todo: store sensitive app data (including api id, api hash and tdlib encryption key) in hardware security module
+// todo: simplify auth routing (split into more components?)

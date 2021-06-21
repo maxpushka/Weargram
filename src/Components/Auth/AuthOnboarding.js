@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import './Auth.css';
+import TizenPage from '../TizenPage';
 
 export default function AuthOnboarding({path}) {
   console.log('at AuthOnboarding', path);
@@ -21,7 +22,7 @@ export default function AuthOnboarding({path}) {
   }, []);
 
   return (
-      <div className="ui-page ui-page-active">
+      <TizenPage>
         <div className="ui-header flex"
              style={{height: 'min-content', marginBottom: '22px'}}>
           <img src={process.env.PUBLIC_URL + '/icons/app-icon.svg'}
@@ -51,6 +52,6 @@ export default function AuthOnboarding({path}) {
             <div className="btn-label">Log in by QR code</div>
           </div>
         </div>
-      </div>
+      </TizenPage>
   );
 }

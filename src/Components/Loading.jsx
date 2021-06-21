@@ -12,7 +12,7 @@ export default function Loading() {
   }, []);
 
   return (
-      <div className="ui-page" ref={page}>
+      <div className="ui-page ui-page-active" ref={page}>
         <div className="ui-content ui-content-padding">
           <div className="small-processing-container">
             <div className="ui-processing" style={processing}/>

@@ -1,20 +1,27 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Redirect} from 'react-router-dom';
 import ApplicationStore from '../../Utils/ApplicationStore';
 import TdLibController from '../../Utils/TdLibController';
-import {isConnecting} from './Auth';
+import {isConnecting, routesContext} from './Auth';
 import './Auth.css';
+import TizenPage from '../TizenPage';
 
+// todo: simplify phone number edition process
 export default function Phone() {
   console.log('at Phone');
   const [phoneData, setPhone] = useState({phone: '', editFlag: false});
-  const [connecting, setConnecting] = useState(() => ApplicationStore.getConnectionState());
+  const [connecting, setConnecting] = useState(() => {
+    const state = ApplicationStore.getConnectionState()?.state;
+    return isConnecting(state);
+  });
 
   const editPhone = () => setPhone({...phoneData, editFlag: true});
 
   useEffect(() => {
+    console.log('setting up Phone handlers...');
     ApplicationStore.on('updateConnectionState', onUpdateConnectionState);
     return function() {
+      console.log('removing Phone handlers...');
       ApplicationStore.off('updateConnectionState', onUpdateConnectionState);
     };
   }, []);
@@ -45,6 +52,12 @@ function EnterPhone({phoneData, setPhone, connecting}) {
     ApplicationStore.on('clientUpdateSetPhoneResult', onSuccess);
     ApplicationStore.on('clientUpdateSetPhoneError', onError);
 
+    // prod: remove test phone
+    const test_phone = process.env.REACT_APP_TEST_DC_PHONE;
+    if (test_phone) {
+      inputEl.current.value = test_phone;
+    }
+
     return function() {
       console.log('cleaning up EnterPhone handlers...');
       ApplicationStore.off('clientUpdateSetPhoneResult', onSuccess);
@@ -54,8 +67,8 @@ function EnterPhone({phoneData, setPhone, connecting}) {
 
   useEffect(() => {
     badPhone ?
-        inputEl.current.classList.add('bad-phone') :
-        inputEl.current.classList.remove('bad-phone');
+        inputEl.current.classList.add('bad-input') :
+        inputEl.current.classList.remove('bad-input');
   }, [badPhone]);
 
   useEffect(() => {
@@ -64,7 +77,9 @@ function EnterPhone({phoneData, setPhone, connecting}) {
     }
   }, [phoneData.editFlag]);
 
-  const onError = () => setBadPhone(true);
+  function onError() {
+    setBadPhone(true);
+  }
 
   function onSuccess() {
     setBadPhone(false);
@@ -75,15 +90,12 @@ function EnterPhone({phoneData, setPhone, connecting}) {
   async function getPhone() {
     const readPhone = inputEl.current.value;
     console.log(`read phone number value: ${readPhone}`);
-
-    if (readPhone.startsWith('+')) {
-      setPhone({phone: readPhone, editFlag: false});
-      await ApplicationStore.setPhoneNumber(readPhone);
-    } else setBadPhone(true);
+    await setPhone({phone: readPhone, editFlag: false});
+    await ApplicationStore.setPhoneNumber(readPhone);
   }
 
   return (
-      <div className="ui-page ui-page-active">
+      <TizenPage>
         <div className="ui-header">
           <p style={{fontSize: '24px', lineHeight: '29px', margin: '1rem 0', padding: '0 62px'}}>
             {connecting ?
@@ -92,61 +104,74 @@ function EnterPhone({phoneData, setPhone, connecting}) {
           </p>
         </div>
         <div className="ui-content" style={{paddingTop: '28px'}}>
-          <input ref={inputEl} id="phone-number" type="text" inputMode="tel"
+          <input ref={inputEl} type="text" inputMode="tel"
                  placeholder="+12223334455"
                  onClick={() => setBadPhone(false)}/>
-          {badPhone && <p className="bad-phone">Invalid phone number</p>}
+          {badPhone && <p className="bad-input">Invalid phone number</p>}
         </div>
         <div className="ui-footer ui-bottom-button">
           {!connecting && <button className="ui-btn" onClick={getPhone}>Next</button>}
         </div>
-      </div>
+      </TizenPage>
   );
 }
 
 function EnterCode({phone, editPhone, connecting}) {
   console.log('at EnterCode');
+
   let [inputCode, setCode] = useState('');
   const [badCode, setBadCode] = useState({state: false, errorString: ''});
   let [loginSuccess, setLoginSuccess] = useState(false);
+  let [unregistered, setUnregistered] = useState(false);
+  let [password, setPassword] = useState(false);
+
   const inputEl = useRef(null);
   const codeLength = useRef(getCodeLength());
+  const routes = useContext(routesContext);
+  console.log('routes context', routes);
+
+  useEffect(() => {
+    ApplicationStore.on('updateAuthorizationState', onUpdateAuthorizationState);
+    return function() {
+      ApplicationStore.off('updateAuthorizationState', onUpdateAuthorizationState);
+    };
+  }, []);
 
   useEffect(() => {
     badCode.state ?
-        inputEl.current.classList.add('bad-phone') :
-        inputEl.current.classList.remove('bad-phone');
+        inputEl.current.classList.add('bad-input') :
+        inputEl.current.classList.remove('bad-input');
   }, [badCode]);
 
+  function onUpdateAuthorizationState() {
+    codeLength.current = getCodeLength();
+  }
+
   function getCodeLength() {
-    const codeInfo = ApplicationStore.getAuthorizationState();
-    console.log('code_info', codeInfo);
+    const codeInfo = ApplicationStore.getAuthorizationState()?.['code_info'];
+
     if (!codeInfo) return 0;
     if (!codeInfo.type) return 0;
 
     switch (codeInfo.type['@type']) {
+      case 'authenticationCodeTypeTelegramMessage':
+      case 'authenticationCodeTypeSms':
       case 'authenticationCodeTypeCall': {
         return codeInfo.type.length;
       }
       case 'authenticationCodeTypeFlashCall': {
         return 0;
       }
-      case 'authenticationCodeTypeSms': {
-        return codeInfo.type.length;
-      }
-      case 'authenticationCodeTypeTelegramMessage': {
-        return codeInfo.type.length;
-      }
+      default:
+        return 0;
     }
-
-    return 0;
   }
 
   function isValid(code) {
     let isBad = !code.match(/^[\d\-+\s]+$/);
     if (!isBad) {
       code = code.replace(/\D/g, '');
-      if (code.length !== 5) {
+      if (code.length !== codeLength.current) {
         isBad = true;
       }
     }
@@ -174,12 +199,22 @@ function EnterCode({phone, editPhone, connecting}) {
   }
 
   function handleDone(code) {
+    // todo: redirect to Password page
     TdLibController.send({
       '@type': 'checkAuthenticationCode',
-      code,
-      first_name: 'A',
-      last_name: 'B',
+      'code': code,
     }).then(result => {
+      const lastState = JSON.parse(localStorage.getItem('auth'));
+
+      if (lastState['@type'] === 'authorizationStateWaitPassword') {
+        setPassword(true);
+        return;
+      }
+      else if (lastState['@type'] === 'authorizationStateWaitRegistration') {
+        setUnregistered(true);
+        return;
+      }
+
       console.log('successfully logged in', result);
       setLoginSuccess(true);
     }).catch(error => {
@@ -197,7 +232,7 @@ function EnterCode({phone, editPhone, connecting}) {
   }
 
   return (
-      <div className="ui-page ui-page-active">
+      <TizenPage>
         <div className="ui-header flex">
           <button onClick={() => editPhone()}
                   className="ui-btn ui-btn-icon ui-btn-circle btn-medium"
@@ -213,13 +248,15 @@ function EnterCode({phone, editPhone, connecting}) {
                 (<>Connection is lost. Reconnecting...</>) :
                 (<>We have sent the code to the Telegram app on your other device</>)}
           </p>
-          <input id="code" type="text" placeholder="Code"
+          <input type="text" placeholder="Code"
                  ref={inputEl} value={inputCode}
                  maxLength={codeLength.current > 0 ? codeLength.current : 256}
                  onClick={() => setBadCode({state: false})} onChange={handleChange}/>
-          {badCode.state && <p className="bad-phone">{badCode.errorString}</p>}
-          {loginSuccess && <Redirect to="/"/>}
+          {badCode.state && <p className="bad-input">{badCode.errorString}</p>}
         </div>
-      </div>
+        {loginSuccess && <Redirect to={routes.success}/>}
+        {unregistered && <Redirect to={routes.unregistered}/>}
+        {password && <Redirect to={routes.password}/>}
+      </TizenPage>
   );
 }

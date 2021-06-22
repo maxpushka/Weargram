@@ -1,4 +1,4 @@
-.ui-btn.ui-btn-icon {
+.ui-btn {
     background-color: #50a2e9;
 }
 
@@ -38,6 +38,13 @@
     height: 4rem !important;
 }
 
+.btn-small {
+    background-size: 3.5rem !important;
+    border-radius: 50%;
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+}
+
 input.bad-input {
     border: solid 3px #FF0000 !important;
     border-radius: 2.1875rem !important;
@@ -52,10 +59,38 @@ p.bad-input {
 
 .unregistered-icon {
     font-size: 2rem;
-    color: rgb(33,33,33);
+    color: rgb(33, 33, 33);
     background-color: #009af9;
     border-radius: 2rem;
     padding: .25rem;
     text-align: center;
+    vertical-align: middle;
+}
+
+.qr-canvas {
+    width: 210px;
+    height: 210px;
+    background: #50A2E9;
+    border-radius: 33px;
+}
+
+.help {
+    font-size: 18px;
+    line-height: 23px;
+    text-align: left;
+    margin: 0.75rem 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: center;
+    justify-content: flex-start;
+    list-style-position: outside;
+}
+
+.help img {
+    width: 28px;
+    height: 28px;
+    margin-right: 13px;
     vertical-align: middle;
 }

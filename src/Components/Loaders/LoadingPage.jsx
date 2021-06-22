@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 
-export default function Loading() {
+export default function LoadingPage() {
   const page = useRef(null);
   let [processing, setProcessing] = useState({visibility: 'hidden'});
 

@@ -45,7 +45,7 @@ export default function Phone() {
 function EnterPhone({phoneData, setPhone, connecting}) {
   console.log('at EnterPhone');
   const [badPhone, setBadPhone] = useState(false);
-  const inputEl = useRef(null);
+  const inputEl = useRef();
 
   useEffect(() => {
     console.log('setting up EnterPhone handlers...');
@@ -125,7 +125,7 @@ function EnterCode({phone, editPhone, connecting}) {
   let [unregistered, setUnregistered] = useState(false);
   let [password, setPassword] = useState(false);
 
-  const inputEl = useRef(null);
+  const inputEl = useRef();
   const codeLength = useRef(getCodeLength());
   const routes = useContext(routesContext);
   console.log('routes context', routes);
@@ -199,7 +199,6 @@ function EnterCode({phone, editPhone, connecting}) {
   }
 
   function handleDone(code) {
-    // todo: redirect to Password page
     TdLibController.send({
       '@type': 'checkAuthenticationCode',
       'code': code,
@@ -209,8 +208,7 @@ function EnterCode({phone, editPhone, connecting}) {
       if (lastState['@type'] === 'authorizationStateWaitPassword') {
         setPassword(true);
         return;
-      }
-      else if (lastState['@type'] === 'authorizationStateWaitRegistration') {
+      } else if (lastState['@type'] === 'authorizationStateWaitRegistration') {
         setUnregistered(true);
         return;
       }
@@ -234,7 +232,7 @@ function EnterCode({phone, editPhone, connecting}) {
   return (
       <TizenPage>
         <div className="ui-header flex">
-          <button onClick={() => editPhone()}
+          <button onClick={editPhone}
                   className="ui-btn ui-btn-icon ui-btn-circle btn-medium"
                   style={{
                     backgroundImage: `url(${process.env.PUBLIC_URL +

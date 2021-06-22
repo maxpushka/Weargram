@@ -344,7 +344,8 @@ class ApplicationStore extends EventEmitter {
           if (
               this.authorizationState &&
               (this.authorizationState['@type'] === 'authorizationStateWaitPhoneNumber' ||
-                  this.authorizationState['@type'] === 'authorizationStateWaitOtherDeviceConfirmation')
+                  this.authorizationState['@type'] ===
+                  'authorizationStateWaitOtherDeviceConfirmation')
           ) {
             this.setPhoneNumber(phone);
           } else {
@@ -456,7 +457,9 @@ class ApplicationStore extends EventEmitter {
   }
 
   getAuthorizationState() {
-    return this.authorizationState;
+    return this.authorizationState ?
+        this.authorizationState :
+        JSON.parse(localStorage.getItem('auth'));
   }
 
   assign(source1, source2) {

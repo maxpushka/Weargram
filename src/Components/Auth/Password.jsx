@@ -6,9 +6,7 @@ import ApplicationStore from '../../Utils/ApplicationStore';
 import {isConnecting} from './Auth';
 import './Auth.css';
 
-// todo: Password
 export default function Password() {
-  const [password, setPassword] = useState('');
   const [badPassword, setBadPassword] = useState({'state': false, 'errorString': ''});
   const [connecting, setConnecting] = useState(() => {
     const state = ApplicationStore.getConnectionState()?.state;

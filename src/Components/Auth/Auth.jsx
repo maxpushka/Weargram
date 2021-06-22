@@ -9,6 +9,9 @@ const Unregistered = React.lazy(() => import('./Unregistered'));
 
 export const routesContext = React.createContext();
 
+// todo: handle switching from QRCode request to Phone number login
+// todo: add animations
+// todo: add processing animation on button while answer is not received yet but request has been sent
 export default function AuthComponent() {
   console.log('at Auth');
   const {url} = useRouteMatch();
@@ -23,8 +26,7 @@ export default function AuthComponent() {
   return (
       <Switch>
         <Route exact path={`${url}`}>
-          {/*<AuthOnboarding path={url}/>*/}
-          <Password/>
+          <AuthOnboarding path={url}/>
         </Route>
         <Route path={routes.phone}>
           <routesContext.Provider
@@ -36,7 +38,9 @@ export default function AuthComponent() {
             <Phone/>
           </routesContext.Provider>
         </Route>
-        <Route path={routes.qr} component={QRCode} passwordPath={routes.password}/>
+        <Route path={routes.qr}>
+          <QRCode passwordPath={routes.password}/>
+        </Route>
         <Route path={routes.password} component={Password}/>
         <Route path={routes.unregistered} component={Unregistered}/>
       </Switch>

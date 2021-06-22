@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom';
 import ApplicationStore from './Utils/ApplicationStore';
-import Loading from './Components/Loading';
+import LoadingPage from './Components/Loaders/LoadingPage';
 import TdLibController from './Utils/TdLibController';
 import TizenPage from './Components/TizenPage';
 
@@ -84,7 +84,7 @@ export default function App() {
   }
 
   return (
-      <React.Suspense fallback={Loading}>
+      <React.Suspense fallback={LoadingPage}>
         <Switch>
           {page}
         </Switch>

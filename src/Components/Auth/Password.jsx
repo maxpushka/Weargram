@@ -1,28 +1,27 @@
 import React, {useEffect, useRef, useState} from 'react';
 import TizenPage from '../TizenPage';
-import TdLibController from '../../Utils/TdLibController';
-import {Redirect} from 'react-router-dom';
-import ApplicationStore from '../../Utils/ApplicationStore';
+import TdLibController from '../../Stores/TdLibController';
+import ApplicationStore from '../../Stores/ApplicationStore';
 import {isConnecting} from './Auth';
 import './Auth.css';
 
 export default function Password() {
+  console.log('[Password]');
   const [badPassword, setBadPassword] = useState({'state': false, 'errorString': ''});
   const [connecting, setConnecting] = useState(() => {
     const state = ApplicationStore.getConnectionState()?.state;
     return isConnecting(state);
   });
-  const [isSuccess, setSuccess] = useState(false);
   const inputEl = useRef(null);
   const passwordHint = useRef('');
 
   useEffect(() => {
-    console.log('setting up Password listeners');
+    console.log('[Password] setting up Password listeners');
     ApplicationStore.on('updateConnectionState', onUpdateConnectionState);
 
     passwordHint.current = ApplicationStore.getAuthorizationState()?.['password_hint'];
     return function() {
-      console.log('removing Password listeners');
+      console.log('[Password] removing Password listeners');
       ApplicationStore.off('updateConnectionState', onUpdateConnectionState);
     };
   }, []);
@@ -52,12 +51,15 @@ export default function Password() {
       '@type': 'checkAuthenticationPassword',
       'password': password,
     }).then(result => {
-      console.log('password is successfully confirmed', result);
-      setSuccess(true);
+      console.log('[Password] password is successfully confirmed', result);
     }).catch(error => {
       let errorString;
       if (error && error['@type'] === 'error' && error.message) {
-        errorString = error.message;
+        if (error.message === 'PASSWORD_HASH_INVALID') {
+          errorString = 'Invalid password';
+        } else {
+          errorString = error.message;
+        }
       } else {
         errorString = JSON.stringify(error);
       }
@@ -68,28 +70,27 @@ export default function Password() {
 
   return (
       <TizenPage>
-        <div className="ui-header">
-          <p style={{}}>
+        <div className="ui-content flex" data-handler="true">
+          <p style={{fontSize: '34px', margin: '1rem 0'}}>
             {connecting ?
                 (<>Connection is lost. Reconnecting...</>) :
                 (<>Enter your password</>)}
           </p>
-        </div>
-        <div className="ui-content">
           <p style={{margin: '.5rem 0', fontSize: '24px', lineHeight: '28px'}}>
             Your account is protected<br/>with an additional password
           </p>
-          <input ref={inputEl} placeholder={passwordHint.current || ''} type="password"
+          <input ref={inputEl} placeholder={passwordHint.current} type="password"
                  onClick={() => setBadPassword({state: false, errorString: ''})}/>
           {badPassword.state && <p className="bad-input">{badPassword.errorString}</p>}
-          <div className="ui-footer ui-bottom-button">
-            <button className="ui-btn"
-                    type="button" onClick={handleNext}>
-              Next
-            </button>
-          </div>
+          <button className="inline-button" type="button" onClick={handleNext}>
+            Next
+          </button>
         </div>
-        {isSuccess && <Redirect to="/"/>}
+        {/*<div className="ui-footer ui-bottom-button">*/}
+        {/*<button className="ui-btn" type="button" onClick={handleNext}>*/}
+        {/*  Next*/}
+        {/*</button>*/}
+        {/*</div>*/}
       </TizenPage>
   );
 }

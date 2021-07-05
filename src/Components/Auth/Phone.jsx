@@ -1,14 +1,14 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Redirect} from 'react-router-dom';
-import ApplicationStore from '../../Utils/ApplicationStore';
-import TdLibController from '../../Utils/TdLibController';
+import ApplicationStore from '../../Stores/ApplicationStore';
+import TdLibController from '../../Stores/TdLibController';
 import {isConnecting, routesContext} from './Auth';
 import './Auth.css';
 import TizenPage from '../TizenPage';
 
 // todo: simplify phone number edition process
 export default function Phone() {
-  console.log('at Phone');
+  console.log('[Phone]');
   const [phoneData, setPhone] = useState({phone: '', editFlag: false});
   const [connecting, setConnecting] = useState(() => {
     const state = ApplicationStore.getConnectionState()?.state;
@@ -18,10 +18,10 @@ export default function Phone() {
   const editPhone = () => setPhone({...phoneData, editFlag: true});
 
   useEffect(() => {
-    console.log('setting up Phone handlers...');
+    console.log('[Phone] setting up Phone handlers...');
     ApplicationStore.on('updateConnectionState', onUpdateConnectionState);
     return function() {
-      console.log('removing Phone handlers...');
+      console.log('[Phone] removing Phone handlers...');
       ApplicationStore.off('updateConnectionState', onUpdateConnectionState);
     };
   }, []);
@@ -31,7 +31,7 @@ export default function Phone() {
     setConnecting(isConnecting(state));
   }
 
-  console.log('phoneData', phoneData, (phoneData.phone && !phoneData.editFlag));
+  console.log('[Phone] phoneData', phoneData, (phoneData.phone && !phoneData.editFlag));
   return (
       <>
         {(phoneData.phone !== '' && !phoneData.editFlag) ?
@@ -43,23 +43,23 @@ export default function Phone() {
 }
 
 function EnterPhone({phoneData, setPhone, connecting}) {
-  console.log('at EnterPhone');
+  console.log('[EnterPhone]');
   const [badPhone, setBadPhone] = useState(false);
   const inputEl = useRef();
 
   useEffect(() => {
-    console.log('setting up EnterPhone handlers...');
+    console.log('[EnterPhone] setting up EnterPhone handlers...');
     ApplicationStore.on('clientUpdateSetPhoneResult', onSuccess);
     ApplicationStore.on('clientUpdateSetPhoneError', onError);
 
     // prod: remove test phone
     const test_phone = process.env.REACT_APP_TEST_DC_PHONE;
-    if (test_phone) {
+    if (TdLibController.parameters.use_test_dc && test_phone) {
       inputEl.current.value = test_phone;
     }
 
     return function() {
-      console.log('cleaning up EnterPhone handlers...');
+      console.log('[EnterPhone] cleaning up EnterPhone handlers...');
       ApplicationStore.off('clientUpdateSetPhoneResult', onSuccess);
       ApplicationStore.off('clientUpdateSetPhoneError', onError);
     };
@@ -77,20 +77,22 @@ function EnterPhone({phoneData, setPhone, connecting}) {
     }
   }, [phoneData.editFlag]);
 
-  function onError() {
+  function onError(event) {
+    console.log('[EnterPhone] onError: invalid phone number', event);
     setBadPhone(true);
   }
 
-  function onSuccess() {
+  function onSuccess(event) {
+    console.log('[EnterPhone] onSuccess');
     setBadPhone(false);
-    console.log('badPhone', badPhone);
     setPhone({phone: inputEl.current.value, editFlag: false});
   }
 
   async function getPhone() {
     const readPhone = inputEl.current.value;
-    console.log(`read phone number value: ${readPhone}`);
-    await setPhone({phone: readPhone, editFlag: false});
+    console.log(`[EnterPhone] read phone number value: ${readPhone}`);
+
+    // the result of this query is handled in onError and onSuccess functions
     await ApplicationStore.setPhoneNumber(readPhone);
   }
 
@@ -117,7 +119,7 @@ function EnterPhone({phoneData, setPhone, connecting}) {
 }
 
 function EnterCode({phone, editPhone, connecting}) {
-  console.log('at EnterCode');
+  console.log('[EnterCode]');
 
   let [inputCode, setCode] = useState('');
   const [badCode, setBadCode] = useState({state: false, errorString: ''});
@@ -128,7 +130,6 @@ function EnterCode({phone, editPhone, connecting}) {
   const inputEl = useRef();
   const codeLength = useRef(getCodeLength());
   const routes = useContext(routesContext);
-  console.log('routes context', routes);
 
   useEffect(() => {
     ApplicationStore.on('updateAuthorizationState', onUpdateAuthorizationState);
@@ -183,7 +184,7 @@ function EnterCode({phone, editPhone, connecting}) {
     const code = event.target.value;
 
     setCode(code);
-    console.log(code, codeLength.current,
+    console.log('[EnterCode] code codeLength.current handleNext', code, codeLength.current,
         code && codeLength.current && code.length === codeLength.current);
 
     if (code && codeLength.current > 0 && code.length === codeLength.current)
@@ -198,8 +199,8 @@ function EnterCode({phone, editPhone, connecting}) {
     }
   }
 
-  function handleDone(code) {
-    TdLibController.send({
+  async function handleDone(code) {
+    await TdLibController.send({
       '@type': 'checkAuthenticationCode',
       'code': code,
     }).then(result => {
@@ -213,7 +214,7 @@ function EnterCode({phone, editPhone, connecting}) {
         return;
       }
 
-      console.log('successfully logged in', result);
+      console.log('[EnterCode] successfully logged in', result);
       setLoginSuccess(true);
     }).catch(error => {
       let errorString = 'Invalid code';

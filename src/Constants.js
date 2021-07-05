@@ -1,0 +1,2 @@
+export const CHAT_SLICE_LIMIT = 25;
+export const OFFSET_ORDER = '9223372036854775807'; // 2^63 - 1

@@ -1,24 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React from 'react';
+import TizenPage from '../TizenPage';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function LoadingPage() {
-  const page = useRef(null);
-  let [processing, setProcessing] = useState({visibility: 'hidden'});
-
-  useEffect(() => {
-    page.current.addEventListener('pageshow',
-        () => setProcessing({visibility: ''}), {once: true});
-    page.current.addEventListener('pagebeforehide',
-        () => setProcessing({visibility: 'hidden'}), {once: true});
-  }, []);
-
+  console.log('[LoadingPage]');
   return (
-      <div className="ui-page ui-page-active" ref={page}>
+      <TizenPage>
         <div className="ui-content ui-content-padding">
           <div className="small-processing-container">
-            <div className="ui-processing" style={processing}/>
+            <LoadingSpinner/>
             <div className="ui-processing-text">Loading</div>
           </div>
         </div>
-      </div>
+      </TizenPage>
   );
 }

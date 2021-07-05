@@ -1,29 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Redirect, Route, Switch} from 'react-router-dom';
-import ApplicationStore from './Utils/ApplicationStore';
+import {Redirect, Route, Switch, useRouteMatch} from 'react-router-dom';
+import TdLibController from './Stores/TdLibController';
+import ApplicationStore from './Stores/ApplicationStore';
 import LoadingPage from './Components/Loaders/LoadingPage';
-import TdLibController from './Utils/TdLibController';
-import TizenPage from './Components/TizenPage';
 
-const AuthComponent = React.lazy(() => import('./Components/Auth/Auth'));
-
-function Main() {
-  console.log('at Main');
-  return (
-      <TizenPage>
-        <div className="ui-content">
-          Main chat list
-        </div>
-      </TizenPage>
-  );
-}
+const MainPage = React.lazy(async () => await import('./Components/MainPage'));
+const AuthComponent = React.lazy(async () => await import('./Components/Auth/Auth'));
 
 export default function App() {
-  console.log('at App');
+  console.log('[App]');
   let [authState, setAuthState] = useState(
-      JSON.parse(localStorage.getItem('auth'))
-      ?? {'@type': 'authorizationStateWaitPhoneNumber'},
+      () => JSON.parse(localStorage.getItem('auth')) ?? {'@type': 'authorizationStateWaitPhoneNumber'},
   );
+  const {url} = useRouteMatch();
 
   useEffect(() => {
     TdLibController.init();
@@ -36,6 +25,7 @@ export default function App() {
 
   function onUpdateAuthorizationState(update) {
     let newState = update['authorization_state'];
+
     if (newState['@type'] === 'authorizationStateClosed' ||
         newState['@type'] === 'authorizationStateClosing' ||
         newState['@type'] === 'authorizationStateWaitEncryptionKey' ||
@@ -53,14 +43,7 @@ export default function App() {
     });
   }
 
-  let page = (
-      <>
-        <Route path="*">
-          <Redirect to="/"/>
-        </Route>
-        <Route exact path="/" component={Main}/>
-      </>
-  );
+  let page;
   switch (authState['@type']) {
     case 'authorizationStateWaitOtherDeviceConfirmation':
     case 'authorizationStateWaitCode':
@@ -79,12 +62,25 @@ export default function App() {
       );
       break;
     }
-    default:
+    case 'authorizationStateLoggingOut': {
+      page = <LoadingPage/>;
       break;
+    }
+    default: {
+      page = (
+          <>
+            <Route path="*">
+              <Redirect to="/"/>
+            </Route>
+            <Route exact path="/" component={MainPage}/>
+          </>
+      );
+      break;
+    }
   }
 
   return (
-      <React.Suspense fallback={LoadingPage}>
+      <React.Suspense fallback={<LoadingPage/>}>
         <Switch>
           {page}
         </Switch>
@@ -93,4 +89,4 @@ export default function App() {
 }
 
 // todo: store sensitive app data (including api id, api hash and tdlib encryption key) in hardware security module
-// todo: simplify auth routing (split into more components?)
+// todo: move public/icons to src/icons

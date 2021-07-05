@@ -1,21 +1,24 @@
-import React from 'react';
+import React, {useState} from 'react';
 import TizenPage from '../TizenPage';
-import TdLibController from '../../Utils/TdLibController';
+import TdLibController from '../../Stores/TdLibController';
 import './Auth.css';
+import {Redirect} from 'react-router-dom';
 
 export default function Unregistered() {
-  function handleClick() {
+  const [redirect, setRedirect] = useState(false);
+
+  async function handleClick() {
+    setRedirect(true);
     TdLibController.logOut();
-    // redirect is not needed since App component
-    // automatically updates based on auth state
   }
 
   return (
       <TizenPage>
         <div className="ui-header flex">
-            <div className="unregistered-icon">
-              (='o'=)
-            </div>
+          <div className="unregistered-icon">
+            {/*(='o'=)*/}
+            <span role="img" aria-label="Oh no">😮😯😮</span>
+          </div>
         </div>
         <div className="ui-content" style={{fontSize: '1.5rem'}}>
           <p style={{color: '#009af9'}}>The user is not registered.</p>
@@ -26,6 +29,7 @@ export default function Unregistered() {
             OK
           </button>
         </div>
+        {redirect && <Redirect to="/"/>}
       </TizenPage>
   );
 }

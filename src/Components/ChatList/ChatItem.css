@@ -1,0 +1,56 @@
+.item {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+
+    background-color: rgba(31,31,31,0.5);
+    border-radius: 100px;
+    width: 360px;
+    height: 108px;
+    margin: 0.5rem 0;
+    padding: 0 30px;
+}
+
+.status {
+    height: 88px;
+    width: 88px;
+    border-radius: 50%;
+    border: solid 2px red;
+    margin-right: 1.75rem;
+}
+
+.status::after {
+    content: '999+';
+    font-size: 18px;
+    display: inline-block;
+    height: 22px;
+    position: relative;
+    left: 40px;
+    bottom: 100px;
+    background-color: red;
+    line-height: 25px;
+    border-radius: 15px;
+    padding: 3px;
+    margin: 0;
+}
+
+.status img {
+    width: 80px;
+    height: 80px;
+}
+
+.info {
+    text-align: left;
+    margin: 0 !important;
+}
+
+.info .name {
+    font-size: 32px;
+}
+
+.info .description {
+    font-size: 24px;
+}

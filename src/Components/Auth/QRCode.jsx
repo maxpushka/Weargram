@@ -1,29 +1,31 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import TizenPage from '../TizenPage';
 import './Auth.css';
-import ApplicationStore from '../../Utils/ApplicationStore';
+import ApplicationStore from '../../Stores/ApplicationStore';
 import {isConnecting} from './Auth';
 import QRCodeStyling from 'qr-code-styling';
-import TdLibController from '../../Utils/TdLibController';
+import TdLibController from '../../Stores/TdLibController';
 import LoadingSpinner from '../Loaders/LoadingSpinner';
 import {Redirect} from 'react-router-dom';
 
 export default function QRCode({passwordPath}) {
-  console.log(`at ${QRCode.name}`);
-  let [popupIsOpen, setPopupIsOpen] = useState(false);
-  let [connectionState, setConnectionState] = useState({connecting: false, showConnecting: false});
-  let [password, setPassword] = useState(false);
-  let [link, setLink] = useState(null);
+  console.log('[QRCode]');
+  const [popupIsOpen, setPopupIsOpen] = useState(false);
+  const [connectionState, setConnectionState] = useState({connecting: false, showConnecting: false});
+  const loggingOut = useRef(false);
+  const [password, setPassword] = useState(false);
+  const [link, setLink] = useState(null);
 
   useEffect(() => {
-    console.log('redrawn existing link', link);
+    console.log('[QRCode] redrawn existing link', link);
     loadData();
   });
 
   useEffect(() => {
-    console.log('setting up QRCode handlers');
+    console.log('[QRCode] setting up handlers');
     ApplicationStore.on('updateConnectionState', onUpdateConnectionState);
     ApplicationStore.on('updateAuthorizationState', onUpdateAuthorizationState);
+    window.addEventListener('popstate', onGoingBack);
 
     const state = ApplicationStore.getAuthorizationState();
     if (state?.['@type'] !== 'authorizationStateWaitOtherDeviceConfirmation') {
@@ -32,26 +34,27 @@ export default function QRCode({passwordPath}) {
         other_user_ids: [],
       });
     } else {
-      console.log('stored qr login link', state.link);
+      console.log('[QRCode] stored qr login link', state.link);
       setLink(state.link);
     }
 
     return function() {
-      console.log('removing QRCode handlers');
+      console.log('[QRCode] removing QRCode handlers');
       ApplicationStore.off('updateConnectionState', onUpdateConnectionState);
       ApplicationStore.off('updateAuthorizationState', onUpdateAuthorizationState);
+      window.removeEventListener('popstate', onGoingBack);
     };
   }, []);
 
   useEffect(() => {
-    console.log('received new link value', link);
+    console.log('[QRCode] received new link value', link);
     loadData();
   }, [link]);
 
   function onUpdateConnectionState(update) {
     const {state} = update;
 
-    console.log('connection', update);
+    console.log('[QRCode] connection', update);
 
     const connecting = isConnecting(state);
     if (connectionState.connecting === connecting) return;
@@ -67,7 +70,7 @@ export default function QRCode({passwordPath}) {
   }
 
   function onUpdateAuthorizationState(update) {
-    console.log('QRCode new auth state', update);
+    console.log('[QRCode] new auth state', update);
     const state = update?.['authorization_state']['@type'];
     if (state === 'authorizationStateWaitOtherDeviceConfirmation') {
       const {link: newLink} = update?.['authorization_state'];
@@ -146,23 +149,31 @@ export default function QRCode({passwordPath}) {
   }
 
   function togglePopup() {
-    console.log('popupIsOpen', !popupIsOpen);
+    console.log('[QRCode] popupIsOpen', !popupIsOpen);
     setPopupIsOpen(!popupIsOpen);
+  }
+
+  async function onGoingBack() {
+    if (window.location.href.includes(passwordPath)) return;
+
+    console.log('Logging out', loggingOut.current);
+    if (!loggingOut.current) {
+      loggingOut.current = true;
+      TdLibController.logOut();
+    }
   }
 
   return (
       popupIsOpen ?
           <HelpPopup togglePopup={togglePopup}/> :
           <TizenPage>
-            <div className="ui-header flex" style={{margin: '1rem 0'}}>
+            <div className="ui-content flex">
               <button onClick={togglePopup}
                       className="ui-btn ui-btn-icon ui-btn-circle btn-small"
                       style={{
                         backgroundImage: `url(${process.env.PUBLIC_URL +
                         '/icons/help_center_white_48dp.svg'}`,
                       }}/>
-            </div>
-            <div className="ui-content flex">
               <div id="qr-canvas" className="flex qr-canvas">
                 {(!link || connectionState.showConnecting) && <LoadingSpinner/>}
               </div>
@@ -173,7 +184,7 @@ export default function QRCode({passwordPath}) {
 }
 
 function HelpPopup({togglePopup}) {
-  console.log(`at ${HelpPopup.name}`);
+  console.log('[HelpPopup]');
   const publicPath = process.env.PUBLIC_URL;
   return (
       <TizenPage>

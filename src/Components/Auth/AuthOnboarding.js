@@ -4,19 +4,19 @@ import './Auth.css';
 import TizenPage from '../TizenPage';
 
 export default function AuthOnboarding({path}) {
-  console.log('at AuthOnboarding', path);
+  console.log('[AuthOnboarding]', path);
 
   function onGoingBack() {
-    console.log('prevented going back');
+    console.log('[AuthOnboarding] prevented going back');
     window.history.forward();
   }
 
   useEffect(() => {
-    console.log('adding back button prevention event');
+    console.log('[AuthOnboarding] adding back button prevention event');
     window.addEventListener('popstate', onGoingBack);
 
     return function() {
-      console.log('removing back button prevention event');
+      console.log('[AuthOnboarding] removing back button prevention event');
       window.removeEventListener('popstate', onGoingBack);
     };
   }, []);

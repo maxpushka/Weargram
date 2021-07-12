@@ -1,3 +1,4 @@
+/* global tizen */
 import TdClient from 'tdweb/dist/tdweb';
 import packageJson from '../../package.json';
 import EventEmitter from './EventEmitter';
@@ -19,11 +20,16 @@ class TdLibController extends EventEmitter {
   constructor() {
     super();
 
-    // prod: uncomment
+    /* eslint-disable-line no-undef */
     // const deviceInfo = tizen.systeminfo.getPropertyValue('BUILD', (build) => {
     //   console.log(build);
     //   return build;
-    // });
+    // }) || {
+    //   manufacturer: 'Samsung',
+    //   model: 'Galaxy Watch 3',
+    //   buildVersion: 'Tizen 5.5',
+    // };
+
     const deviceInfo = {
       manufacturer: 'Samsung',
       model: 'Galaxy Watch 3',
@@ -33,7 +39,7 @@ class TdLibController extends EventEmitter {
     this.disableLog = false;
     this.parameters = {
       '@type': 'tdParameters',
-      use_test_dc: false, // prod: use_test_dc: false
+      use_test_dc: true, // prod: use_test_dc: false
       api_id: process.env['REACT_APP_APP_ID'],
       api_hash: process.env['REACT_APP_APP_HASH'],
       system_language_code: /*tizen.systeminfo.getPropertyValue('LOCALE', (locale) => locale.language) ||*/ 'en',

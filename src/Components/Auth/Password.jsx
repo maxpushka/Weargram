@@ -82,7 +82,7 @@ export default function Password() {
           <input ref={inputEl} placeholder={passwordHint.current} type="password"
                  onClick={() => setBadPassword({state: false, errorString: ''})}/>
           {badPassword.state && <p className="bad-input">{badPassword.errorString}</p>}
-          <button className="inline-button" type="button" onClick={handleNext}>
+          <button className="inline-btn" type="button" onClick={handleNext}>
             Next
           </button>
         </div>

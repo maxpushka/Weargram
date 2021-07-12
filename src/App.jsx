@@ -90,3 +90,4 @@ export default function App() {
 
 // todo: store sensitive app data (including api id, api hash and tdlib encryption key) in hardware security module
 // todo: move public/icons to src/icons
+// todo: add prop-types throughout the project where necessary

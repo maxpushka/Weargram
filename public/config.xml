@@ -5,7 +5,7 @@
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.normal"/>
     <feature name="http://tizen.org/feature/network.internet"/>
-    <icon src="icon.svg"/>
+    <icon src="app-icon.png"/>
     <name>Weargram</name>
     <tizen:privilege name="http://tizen.org/privilege/system"/>
     <tizen:privilege name="http://tizen.org/privilege/internet"/>

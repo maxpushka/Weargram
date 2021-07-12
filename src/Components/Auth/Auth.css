@@ -18,7 +18,7 @@
     background-color: #50a2e9;
 }
 
-.inline-button {
+.inline-btn {
     display: inline-block;
     padding: 0.3em 1.2em;
     margin: 0 0.1em 0.1em 0;
@@ -35,12 +35,12 @@
     transition: all 0.2s;
 }
 
-.inline-button:hover {
+.inline-btn:hover {
     border-color: rgba(255, 255, 255, 1);
 }
 
 @media all and (max-width: 30em) {
-    .inline-button {
+    .inline-btn {
         display: block;
         margin: 0.2em auto;
     }

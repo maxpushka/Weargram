@@ -12,6 +12,15 @@ ReactDOM.render(
       <Router>
         <App/>
       </Router>
+      <div style={{
+        width: '360px',
+        height: '360px',
+        border: '2px solid #fff',
+        borderRadius: '50%',
+        position: 'fixed',
+        zIndex: '1000000',
+        pointerEvents: 'none',
+      }}/>
     </React.StrictMode>,
     document.getElementById('root'),
 );

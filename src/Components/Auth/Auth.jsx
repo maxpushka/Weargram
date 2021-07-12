@@ -9,8 +9,6 @@ const Unregistered = React.lazy(async () => await import('./Unregistered'));
 
 export const routesContext = React.createContext();
 
-// todo: add processing animation on button while answer is not received yet but request has been sent
-
 export default function AuthComponent() {
   console.log('[Auth]');
   const {url} = useRouteMatch();

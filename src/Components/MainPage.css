@@ -1,3 +1,9 @@
+.swiper-pagination {
+    position: relative !important;
+    bottom: 0 !important;
+    margin-top: 23px !important;
+}
+
 .swiper-pagination-bullet {
     width: 20px !important;
     height: 20px !important;
@@ -12,6 +18,26 @@
     background-color: #50a2e9 !important;
 }
 
-.menu-bullet {
-    top: 6px;
+.slide-header {
+    font-size: 30px;
+    margin: 14px 64px 25px;
+    color: #4DCFFF;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.unread-header-badge::after {
+    position: relative;
+    bottom: 3px;
+    margin-left: 10px;
+    padding: 5px;
+    background-color: #4DCFFF;
+    border-radius: 33px;
+    width: min-content;
+
+    content: '999+';
+    font-size: 20px;
+    color: #000000;
 }

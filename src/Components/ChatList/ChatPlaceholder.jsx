@@ -5,7 +5,6 @@ import './ChatPlaceholder.css';
 function ChatPlaceholder({index}) {
   const titleWidth = `${170 + Math.sin(index) * 10}px`;
   const contentWidth = `${200 + Math.cos(index) * 10}px`;
-  console.log('[ChatPlaceholder]', titleWidth, contentWidth);
 
   return (
       <li className="chatlist-placeholder">

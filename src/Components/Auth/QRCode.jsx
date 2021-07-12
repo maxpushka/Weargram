@@ -188,7 +188,7 @@ function HelpPopup({togglePopup}) {
   const publicPath = process.env.PUBLIC_URL;
   return (
       <TizenPage>
-        <div className="ui-content" style={{marginTop: '2.5rem'}}>
+        <div className="ui-content" style={{marginTop: '4.5rem'}}>
           <ol style={{padding: '0 20px'}}>
             <li className="help">
               <img src={publicPath + '/icons/looks_one_white_48dp.svg'} alt="1."/>

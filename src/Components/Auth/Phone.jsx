@@ -45,6 +45,7 @@ export default function Phone() {
 function EnterPhone({phoneData, setPhone, connecting}) {
   console.log('[EnterPhone]');
   const [badPhone, setBadPhone] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const inputEl = useRef();
 
   useEffect(() => {
@@ -53,10 +54,10 @@ function EnterPhone({phoneData, setPhone, connecting}) {
     ApplicationStore.on('clientUpdateSetPhoneError', onError);
 
     // prod: remove test phone
-    const test_phone = process.env.REACT_APP_TEST_DC_PHONE;
-    if (TdLibController.parameters.use_test_dc && test_phone) {
-      inputEl.current.value = test_phone;
-    }
+    // const test_phone = process.env.REACT_APP_TEST_DC_PHONE;
+    // if (TdLibController.parameters.use_test_dc && test_phone) {
+    //   inputEl.current.value = test_phone;
+    // }
 
     return function() {
       console.log('[EnterPhone] cleaning up EnterPhone handlers...');
@@ -92,14 +93,17 @@ function EnterPhone({phoneData, setPhone, connecting}) {
     const readPhone = inputEl.current.value;
     console.log(`[EnterPhone] read phone number value: ${readPhone}`);
 
-    // the result of this query is handled in onError and onSuccess functions
-    await ApplicationStore.setPhoneNumber(readPhone);
+    // the result of the below query is handled in onError and onSuccess functions
+    await new Promise(resolve => {
+      setProcessing(true);
+      resolve();
+    }).then(() => ApplicationStore.setPhoneNumber(readPhone)).finally(() => setProcessing(false));
   }
 
   return (
       <TizenPage>
         <div className="ui-header">
-          <p style={{fontSize: '24px', lineHeight: '29px', margin: '1rem 0', padding: '0 62px'}}>
+          <p style={{fontSize: '24px', lineHeight: '29px', marginBottom: 0, padding: '0 62px'}}>
             {connecting ?
                 (<>Connection is lost. Reconnecting...</>) :
                 (<>Please enter your phone number in <i>international format</i></>)}
@@ -110,10 +114,11 @@ function EnterPhone({phoneData, setPhone, connecting}) {
                  placeholder="+12223334455"
                  onClick={() => setBadPhone(false)}/>
           {badPhone && <p className="bad-input">Invalid phone number</p>}
+          {processing && <div className="ui-processing ui-processing-full-size"/>}
+          {!connecting && <button className="inline-btn" style={{marginTop: '30px'}} onClick={getPhone}>Next</button>}
         </div>
-        <div className="ui-footer ui-bottom-button">
-          {!connecting && <button className="ui-btn" onClick={getPhone}>Next</button>}
-        </div>
+        {/*<div className="ui-footer ui-bottom-button">*/}
+        {/*</div>*/}
       </TizenPage>
   );
 }
@@ -121,11 +126,12 @@ function EnterPhone({phoneData, setPhone, connecting}) {
 function EnterCode({phone, editPhone, connecting}) {
   console.log('[EnterCode]');
 
-  let [inputCode, setCode] = useState('');
+  const [inputCode, setCode] = useState('');
   const [badCode, setBadCode] = useState({state: false, errorString: ''});
-  let [loginSuccess, setLoginSuccess] = useState(false);
-  let [unregistered, setUnregistered] = useState(false);
-  let [password, setPassword] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [unregistered, setUnregistered] = useState(false);
+  const [password, setPassword] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const inputEl = useRef();
   const codeLength = useRef(getCodeLength());
@@ -200,10 +206,13 @@ function EnterCode({phone, editPhone, connecting}) {
   }
 
   async function handleDone(code) {
-    await TdLibController.send({
+    await new Promise(resolve => {
+      setProcessing(true);
+      resolve();
+    }).then(() => TdLibController.send({
       '@type': 'checkAuthenticationCode',
       'code': code,
-    }).then(result => {
+    })).then(result => {
       const lastState = JSON.parse(localStorage.getItem('auth'));
 
       if (lastState['@type'] === 'authorizationStateWaitPassword') {
@@ -227,7 +236,7 @@ function EnterCode({phone, editPhone, connecting}) {
       }
 
       setBadCode({state: true, errorString});
-    });
+    }).finally(() => setProcessing(false));
   }
 
   return (
@@ -252,6 +261,7 @@ function EnterCode({phone, editPhone, connecting}) {
                  maxLength={codeLength.current > 0 ? codeLength.current : 256}
                  onClick={() => setBadCode({state: false})} onChange={handleChange}/>
           {badCode.state && <p className="bad-input">{badCode.errorString}</p>}
+          {processing && <div className="ui-processing ui-processing-full-size"/>}
         </div>
         {loginSuccess && <Redirect to={routes.success}/>}
         {unregistered && <Redirect to={routes.unregistered}/>}

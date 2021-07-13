@@ -41,3 +41,10 @@
     font-size: 20px;
     color: #000000;
 }
+
+#dummy-item {
+    width: 360px;
+    height: 108px;
+    margin: 0.5rem 0;
+    padding: 16px 30px 0;
+}

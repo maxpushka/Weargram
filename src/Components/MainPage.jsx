@@ -8,6 +8,7 @@ import {Swiper, SwiperSlide} from 'swiper/react';
 import ChatPlaceholder from './ChatList/ChatPlaceholder';
 import ChatItem from './ChatList/ChatItem';
 import TdLibController from '../Stores/TdLibController';
+import GoToTopButton from '../tau/wearable/theme/default/images/go_to_top_dark.png';
 
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y, Virtual]);
 
@@ -19,6 +20,10 @@ export default function MainPage() {
       swiper.slideTo(1);
     }
   }, [swiper]);
+
+  function goToTop() {
+    document.querySelector('.slide-header').scrollIntoView({block: 'center', behavior: 'smooth'});
+  }
 
   return (
       <TizenPage className="ui-scroll-on">
@@ -52,7 +57,7 @@ export default function MainPage() {
                 <li><a href="#" onClick={() => TdLibController.logOut()}>Logout</a></li>
               </ul>
             </SwiperSlide>
-            {Array.from({length: 100}, (el, index) =>
+            {Array.from({length: 10}, (el, index) =>
                 <SwiperSlide key={index + 1} virtualIndex={index + 1}>
                   {/* 1 is added to virtualIndex because zero index is assigned to Settings slide */}
                   <div className="slide-header unread-header-badge">All chats</div>
@@ -62,9 +67,12 @@ export default function MainPage() {
                     <ChatItem/>
                     <ChatItem/>
                     <ChatItem/>
+                    <li id="dummy-item">
+                      <img onClick={goToTop} src={GoToTopButton} alt="back to top"/>
+                    </li>
                   </ul>
-                </SwiperSlide>,
-            )}
+                </SwiperSlide>)
+            }
           </Swiper>
         </div>
       </TizenPage>
